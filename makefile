@@ -4,6 +4,7 @@ KemonoSearch: main.cpp
 
 
 clean:
-	rm KemonoSearch
-	rm output.txt
-	rm website.json
+	rm -f KemonoSearch
+	rm -f output.txt
+	rm -f website.json
+	rm -f *.txt
