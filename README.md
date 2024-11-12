@@ -5,7 +5,12 @@ If run with arguments:
 
 KemonoSearch [path to output]
 
-# Compilation
-No special compilation is required. For example:
+# Dependencies
 
-gcc KemonoSearch main.cpp
+- curl
+- curlpp
+- gcc
+
+# Compilation
+
+KemonoSearch is compiled with make using the provided makefile
