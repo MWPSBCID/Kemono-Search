@@ -1,15 +1,39 @@
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
+#include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <istream>
 #include <ostream>
 #include <string>
 #include <cctype>
 #include <chrono>
 #include <string.h>
+#include <vector>
 
 namespace ch = std::chrono;
+
+struct User {
+	std::string id;
+	std::string name;
+
+};
+
+std::ostream& operator<< (std::ostream& os, const User& user) {
+	os << '{' << user.id << ':' << user.name << '}';
+	return os;
+};
+std::istream& operator>> (std::istream& is, User& user) {
+	bool fail = false;
+	char ch = '-';
+	if (!is.get(ch) || ch != '{') fail = true;
+	if (!std::getline(is, user.id, ':')) fail = true;
+	if (!std::getline(is, user.name, '}')) fail = true;
+	
+	if (fail) is.setstate(std::istream::failbit);
+	return is;
+}
 
 int replaceSpaces(std::string& input) {
 	int len = input.length();
@@ -28,10 +52,21 @@ std::string stringToLower(std::string input) {
 	return input;
 }
 
+bool searchUsers(std::string& username, const std::vector<User>& userVector, const std::string userId) {
+	
+	for (User u : userVector) {
+		if (u.id == userId) {
+			username = u.name;
+			return true;
+		}
+	}
+	return false;
+}
 
 
 int main(int argc, char* argv[])
 {
+	std::vector<User> knownUsers;
 	int titles, i = 0;
 	bool PRINT_TIME = false, GET_USERNAMES = false;
 	std::string filter, search, url, outName = "output.txt";
@@ -63,6 +98,18 @@ int main(int argc, char* argv[])
 			
 		}
 
+	}
+	if (GET_USERNAMES) {
+		std::ifstream usersFile("users.txt");
+		User u;
+		std::string buf;
+		while (true) {
+			usersFile >> u;
+			if (usersFile.fail()) break;
+			knownUsers.push_back(u);
+			getline(usersFile, buf);
+		}
+		usersFile.close();
 	}
 	i = 0;
 	std::cout << outName << std::endl;
@@ -119,7 +166,7 @@ int main(int argc, char* argv[])
 		titles = 0;
 
 		std::ifstream myFileI("website.json");
-		std::string buf, service, id, user, username, title, titleLow;
+		std::string buf, service, id, user, username = "", title, titleLow;
 		while (true) {
 			getline(myFileI, buf, '"');
 			if (myFileI.eof())
@@ -151,60 +198,66 @@ int main(int argc, char* argv[])
 					
 					if (GET_USERNAMES) {
 						const auto userStart {ch::system_clock::now()};
-						std::ofstream userFile;
-						userFile.open("user.json");
+						if (!searchUsers(username, knownUsers, user)) {
+							std::ofstream userFile;
+							userFile.open("user.json");
 
-						url = "https://kemono.su/api/v1/patreon/user/";
-						url += user;
-						url += "/profile";
-						try
-						{
-							// That's all that is needed to do cleanup of used resources (RAII style).
-							curlpp::Cleanup myCleanup;
+							url = "https://kemono.su/api/v1/patreon/user/";
+							url += user;
+							url += "/profile";
+							try
+							{
+								// That's all that is needed to do cleanup of used resources (RAII style).
+								curlpp::Cleanup myCleanup;
 
-							// Our request to be sent.
-							curlpp::Easy myRequest;
+								// Our request to be sent.
+								curlpp::Easy myRequest;
 
-							// Set the URL.
-							myRequest.setOpt<curlpp::options::Url>(url);
+								// Set the URL.
+								myRequest.setOpt<curlpp::options::Url>(url);
 
-							// Set output file stream
-							myRequest.setOpt(cURLpp::Options::WriteStream(&userFile));
+								// Set output file stream
+								myRequest.setOpt(cURLpp::Options::WriteStream(&userFile));
 
-							// Send request and get a result.
-							// By default the result goes to standard output.
-							myRequest.perform();
-						}
-
-						catch (curlpp::RuntimeError& e)
-						{
-							std::cout << e.what() << std::endl;
-						}
-
-						catch (curlpp::LogicError& e)
-						{
-							std::cout << e.what() << std::endl;
-						}
-						userFile.close();
-						//	Get username end
-						std::ifstream userFileI("user.json");
-					
-						while (true) {
-							getline(userFileI, buf, '"');
-							if (buf == "name") {
-								getline(userFileI, buf, '"');
-								getline(userFileI, buf, '"');
-								username = buf;
-								break;
+								// Send request and get a result.
+								// By default the result goes to standard output.
+								myRequest.perform();
 							}
-							if (myFileI.eof()) {
-								std::cout << "Error getting username";
-								outputFile << "Error getting username";
-								break;
+
+							catch (curlpp::RuntimeError& e)
+							{
+								std::cout << e.what() << std::endl;
 							}
-							
+
+							catch (curlpp::LogicError& e)
+							{
+								std::cout << e.what() << std::endl;
+							}
+							userFile.close();
+							//	Get username end
+							std::ifstream userFileI("user.json");
+						
+							while (true) {
+								getline(userFileI, buf, '"');
+								if (buf == "name") {
+									getline(userFileI, buf, '"');
+									getline(userFileI, buf, '"');
+									username = buf;
+									break;
+								}
+								if (myFileI.eof()) {
+									std::cout << "Error getting username";
+									outputFile << "Error getting username";
+									break;
+								}
+								
+							}
+							userFileI.close();
+							if (username != "") {
+								User u {user, username};
+								knownUsers.push_back(u);
+							}
 						}
-						userFileI.close();
 						const auto userEnd {ch::system_clock::now()};
 						ch::duration<double> userElapsed {userEnd - userStart};
 						if (PRINT_TIME) std::cout << "User get cost: " << userElapsed.count()*1000 << "ms" << std::endl;
@@ -231,7 +284,13 @@ int main(int argc, char* argv[])
 		i++;
 		myFileI.close();
 	}
-
+	if (GET_USERNAMES) {
+		std::ofstream usersFile("users.txt");
+		for (User u : knownUsers) {
+			usersFile << u << std::endl;
+		}
+		usersFile.close();
+	}
 	std::cout << "Finished parsing!" << std::endl;
 
 	outputFile.close();
