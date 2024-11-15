@@ -1,7 +1,6 @@
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
-#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <istream>
@@ -11,29 +10,10 @@
 #include <chrono>
 #include <string.h>
 #include <vector>
+#include "parser.h"
 
 namespace ch = std::chrono;
 
-struct User {
-	std::string id;
-	std::string name;
-
-};
-
-std::ostream& operator<< (std::ostream& os, const User& user) {
-	os << '{' << user.id << ':' << user.name << '}';
-	return os;
-};
-std::istream& operator>> (std::istream& is, User& user) {
-	bool fail = false;
-	char ch = '-';
-	if (!is.get(ch) || ch != '{') fail = true;
-	if (!std::getline(is, user.id, ':')) fail = true;
-	if (!std::getline(is, user.name, '}')) fail = true;
-	
-	if (fail) is.setstate(std::istream::failbit);
-	return is;
-}
 
 int replaceSpaces(std::string& input) {
 	int len = input.length();
@@ -52,16 +32,6 @@ std::string stringToLower(std::string input) {
 	return input;
 }
 
-bool searchUsers(std::string& username, const std::vector<User>& userVector, const std::string userId) {
-	
-	for (User u : userVector) {
-		if (u.id == userId) {
-			username = u.name;
-			return true;
-		}
-	}
-	return false;
-}
 
 
 int main(int argc, char* argv[])
@@ -124,43 +94,9 @@ int main(int argc, char* argv[])
 	outputFile.open(outName);
 
 	while (true) {
-
-		url = "https://kemono.su/api/v1/posts?q=";
-		url += search;
-		url += "&o=";
-		url += std::to_string(i*50);
-		std::cout << "Searching page " << i + 1 << "." << std::endl;
-		const auto startTime{ch::system_clock::now()};
 		std::ofstream myFile;
-		myFile.open("website.json");
-		try
-		{
-			// That's all that is needed to do cleanup of used resources (RAII style).
-			curlpp::Cleanup myCleanup;
-
-			// Our request to be sent.
-			curlpp::Easy myRequest;
-
-			// Set the URL.
-			myRequest.setOpt<curlpp::options::Url>(url);
-
-			// Set output file stream
-			myRequest.setOpt(cURLpp::Options::WriteStream(&myFile));
-
-			// Send request and get a result.
-			myRequest.perform();
-		}
-		catch (curlpp::RuntimeError& e)
-		{
-			std::cout << e.what() << std::endl;
-		}
-		catch (curlpp::LogicError& e)
-		{
-			std::cout << e.what() << std::endl;
-		}
-		const auto getTime{ch::system_clock::now()};
-		ch::duration<double> getElapsed{getTime-startTime};
-		if (PRINT_TIME) std::cout << "Time for get: " << getElapsed.count() * 1000 << "ms" << std::endl;
+		const auto startTime{ch::system_clock::now()};
+		getPage(myFile, search, i, startTime, PRINT_TIME);
 		myFile.close();
 
 		titles = 0;
@@ -197,42 +133,12 @@ int main(int argc, char* argv[])
 				if (titleLow.find(filter) != std::string::npos) {
 					
 					if (GET_USERNAMES) {
+
 						const auto userStart {ch::system_clock::now()};
 						if (!searchUsers(username, knownUsers, user)) {
 							std::ofstream userFile;
 							userFile.open("user.json");
-
-							url = "https://kemono.su/api/v1/patreon/user/";
-							url += user;
-							url += "/profile";
-							try
-							{
-								// That's all that is needed to do cleanup of used resources (RAII style).
-								curlpp::Cleanup myCleanup;
-
-								// Our request to be sent.
-								curlpp::Easy myRequest;
-
-								// Set the URL.
-								myRequest.setOpt<curlpp::options::Url>(url);
-
-								// Set output file stream
-								myRequest.setOpt(cURLpp::Options::WriteStream(&userFile));
-
-								// Send request and get a result.
-								// By default the result goes to standard output.
-								myRequest.perform();
-							}
-
-							catch (curlpp::RuntimeError& e)
-							{
-								std::cout << e.what() << std::endl;
-							}
-
-							catch (curlpp::LogicError& e)
-							{
-								std::cout << e.what() << std::endl;
-							}
+							getUser(userFile, user, username, knownUsers);
 							userFile.close();
 							//	Get username end
 							std::ifstream userFileI("user.json");
