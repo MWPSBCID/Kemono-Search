@@ -10,7 +10,9 @@
 #include <chrono>
 #include <string.h>
 #include <vector>
+#include "entryTypes.h"
 #include "parser.h"
+#include "jsonExporter.h"
 
 namespace ch = std::chrono;
 
@@ -38,7 +40,7 @@ int main(int argc, char* argv[])
 {
 	std::vector<User> knownUsers;
 	int titles, i = 0;
-	bool PRINT_TIME = false, GET_USERNAMES = false;
+	bool PRINT_TIME = false, GET_USERNAMES = false, DEBUG_INFO = false;
 	std::string filter, search, url, outName = "output.txt";
 	std::ofstream outputFile;
 	if (argc > 1) {
@@ -46,6 +48,10 @@ int main(int argc, char* argv[])
 		for (i = 1; i < argc; i++) {
 			if (strcmp(argv[i], "-t") == 0 || strcmp(argv[i], "-T") == 0) {
 				PRINT_TIME = true;
+				continue;
+			}
+			if (strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "-D") == 0) {
+				DEBUG_INFO = true;
 				continue;
 			}
 			if (strcmp(argv[i], "-u") == 0 || strcmp(argv[i], "-U") == 0) {
@@ -102,7 +108,8 @@ int main(int argc, char* argv[])
 		titles = 0;
 
 		std::ifstream myFileI("website.json");
-		std::string buf, service, id, user, username = "", title, titleLow;
+		std::string buf, service, published = "unknown", id, user, username = "", title, titleLow;
+		Entry entry;
 		while (true) {
 			getline(myFileI, buf, '"');
 			if (myFileI.eof())
@@ -120,18 +127,23 @@ int main(int argc, char* argv[])
 			if (buf == "service") {
 				getline(myFileI, buf, '"');
 				getline(myFileI, buf, '"');
-				service = buf;
+				entry.service = buf;
 			}
+			if (buf == "published") {
+				getline(myFileI, buf, '"');
+				getline(myFileI, buf, '"');
+				entry.published = buf;
+			} 
 			if (buf == "title") {
 				getline(myFileI, buf, '"');
 				getline(myFileI, buf, '"');
-				title = buf;
-				titleLow = stringToLower(title);
+				entry.title = buf;
+				titleLow = stringToLower(entry.title);
 				titles++;
-
+				entry.link = "https://kemono.su/patreon/user/" + user + "/post/" + id;
 				//	Get username
 				if (titleLow.find(filter) != std::string::npos) {
-					
+					std::cout << "Filter match" << std::endl;	
 					if (GET_USERNAMES) {
 
 						const auto userStart {ch::system_clock::now()};
@@ -167,12 +179,17 @@ int main(int argc, char* argv[])
 						const auto userEnd {ch::system_clock::now()};
 						ch::duration<double> userElapsed {userEnd - userStart};
 						if (PRINT_TIME) std::cout << "User get cost: " << userElapsed.count()*1000 << "ms" << std::endl;
+						
+						if (addEntry(knownUsers, user, entry)) {
+							std::cout << "Error on adding entry to user: " << user;
+							return -1;
+						}
 
-						std::cout << "Title: " << title << "		User: " << username << std::endl;
+						std::cout << "Title: " << entry.title << "		User: " << username << std::endl;
 						outputFile << "\nPage: " << i + 1 << "	Title: " << title << "		User: " << username << std::endl;
 					}
 					else {
-						std::cout << "Title: " << title << std::endl;
+						std::cout << "Title: " << entry.title << std::endl;
 						outputFile << "\nPage: " << i + 1 << "	Title: " << title << std::endl;
 					}
 					std::cout << "https://kemono.su/patreon/user/" << user << "/post/" << id << std::endl;
@@ -198,6 +215,18 @@ int main(int argc, char* argv[])
 		usersFile.close();
 	}
 	std::cout << "Finished parsing!" << std::endl;
+	
+	if (DEBUG_INFO) {
+		for (auto u : knownUsers) {
+			std::cout << u << ": " << u.entries.size() <<  std::endl;
+			for (auto e : u.entries) {
+
+				std::cout << "Entry: " << "	" << e << std::endl;
+			}
+		}
+	}
+
+	exportJsonData(knownUsers, "output.json");
 
 	outputFile.close();
 	return 0;

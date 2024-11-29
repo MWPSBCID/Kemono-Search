@@ -100,3 +100,15 @@ int getUser(std::ofstream& file, std::string userId, std::string& username, std:
 	return 0;
 }
 
+int addEntry(std::vector<User>& users, std::string userId, Entry entry) {
+	
+	for (User& user : users) {
+		if (user.id == userId) {
+			user.entries.push_back(entry);
+			return 0;
+		}
+	}
+
+	return -1;
+};
+
