@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 	std::vector<User> knownUsers;
 	int titles, i = 0;
 	bool PRINT_TIME = false, GET_USERNAMES = false, DEBUG_INFO = false;
-	std::string filter, search, url, outName = "output.txt";
+	std::string filter, search, url, outName = "output.txt", jsonName = "output.json";
 	std::ofstream outputFile;
 	if (argc > 1) {
 		
@@ -56,6 +56,19 @@ int main(int argc, char* argv[])
 			}
 			if (strcmp(argv[i], "-u") == 0 || strcmp(argv[i], "-U") == 0) {
 				GET_USERNAMES = true;
+				continue;
+			}
+			if (strcmp(argv[i], "-j") == 0 || strcmp(argv[i], "-J") == 0) {
+				i++;
+				if (i == argc) {
+					std::cout << "No JSON file." << std::endl;
+					return -1;
+				}
+				if (argv[i][0] == '-') {
+					std::cout << "JSON file may not start with -" << std::endl;
+					return -1;
+				}
+				jsonName = argv[i];
 				continue;
 			}
 			if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "-O") == 0) {
@@ -226,7 +239,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	exportJsonData(knownUsers, "output.json");
+	exportJsonData(knownUsers, jsonName);
 
 	outputFile.close();
 	return 0;
