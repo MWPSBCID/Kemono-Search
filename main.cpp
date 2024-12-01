@@ -149,8 +149,17 @@ int main(int argc, char* argv[])
 			} 
 			if (buf == "title") {
 				getline(myFileI, buf, '"');
+				bool escapeChar;
+				entry.title = "";
+				do {
+					escapeChar = false;
 				getline(myFileI, buf, '"');
-				entry.title = buf;
+				entry.title += buf;
+				if (entry.title[entry.title.length() - 1] == '\\') {
+					entry.title += '\"';
+					escapeChar = true;
+				}
+				} while (escapeChar);
 				titleLow = stringToLower(entry.title);
 				titles++;
 				entry.link = "https://kemono.su/patreon/user/" + user + "/post/" + id;
