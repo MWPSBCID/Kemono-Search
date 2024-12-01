@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
 						if (!searchUsers(username, knownUsers, user)) {
 							std::ofstream userFile;
 							userFile.open("user.json");
-							getUser(userFile, user, username, knownUsers);
+							getUser(userFile, user, username, knownUsers, entry.service);
 							userFile.close();
 							//	Get username end
 							std::ifstream userFileI("user.json");

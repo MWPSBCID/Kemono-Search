@@ -63,10 +63,10 @@ int getPage(std::ofstream& file, std::string search, int page, ch::system_clock:
 	return 0;
 }
 
-int getUser(std::ofstream& file, std::string userId, std::string& username, std::vector<User> knownUsers) {
+int getUser(std::ofstream& file, std::string userId, std::string& username, std::vector<User> knownUsers, std::string service) {
 
 
-		std::string url = "https://kemono.su/api/v1/patreon/user/";
+		std::string url = "https://kemono.su/api/v1/" + service + "/user/";
 		url += userId;
 		url += "/profile";
 		try

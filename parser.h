@@ -14,6 +14,6 @@ bool searchUsers(std::string& username, const std::vector<User>& userVector, con
 
 int getPage(std::ofstream& file, std::string search, int page, ch::time_point<ch::system_clock> startTime, bool PRINT_TIME);
 
-int getUser(std::ofstream& file, std::string userId, std::string& username, std::vector<User>);
+int getUser(std::ofstream& file, std::string userId, std::string& username, std::vector<User> user, std::string service);
 
 int addEntry(std::vector<User>& users, std::string userId, Entry entry);
