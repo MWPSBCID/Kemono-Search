@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+
+
+	</head>
+	<body>
+
+		<input id=file type=file />
+		
+		<div id="output">
+
+
+		</div>
+
+	</body>
+
+	<script>
+		var str;
+		var currentID;
+		document.getElementById('file').addEventListener('change', readFile, false);
+		function readFile(evt) {
+			var files = evt.target.files;
+			var file = files[0];
+			var reader = new FileReader();
+			reader.onload = function(event) {
+				console.log(event.target.result);
+				resultList = JSON.parse(event.target.result);
+				str = "";
+				resultList.forEach(printUser);
+			}
+			reader.readAsText(file)
+		}
+		function printUser(userObj) {
+			target = document.getElementById('output');
+			currentID = userObj.id;
+			target.innerHTML += "<details id=\"" + currentID + "\"><\\details>";
+			detailsTarget = document.getElementById(currentID);
+			detailsTarget.innerHTML = "<summary id=\"s" + currentID + "\"><\\summary>";
+			summaryTarget = document.getElementById("s" + currentID);
+			summaryTarget.innerHTML = userObj.name + "    [" + userObj.entries.length + "]";
+	
+			userObj.entries.forEach(printEntry);
+		}
+		
+		function printEntry(entryObj) {
+			document.getElementById(currentID).innerHTML += "<a href=\"" + entryObj.link + "\">" + entryObj.title + "	<i>[" + entryObj.published + "]<br>";
+		}
+
+	</script>
+
+</html>
