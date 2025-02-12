@@ -4,9 +4,13 @@ If run without arguments it will create an output.txt file in its own directory.
 ## Command line arguments:
 
 -t ... Shows time information
+
 -u ... Gets usernames of posters
+
 -d ... Shows debud information
+
 -o [output.txt] ... Sets output file for regular output
+
 -j [output.json] ... Sets output file for JSON output
 
 ## JSON output
