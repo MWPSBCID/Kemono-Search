@@ -18,6 +18,23 @@
 
 namespace ch = std::chrono;
 
+
+int getUserInput(std::string& search, std::string& filter) {
+
+	std::cout << OUT_NAME << std::endl;
+	std::cout << "Enter search term: ";
+	getline(std::cin, search);
+	search = stringToLower(search);
+	replaceSpaces(search);
+	std::cout << "Search term: " << search << std::endl;
+	std::cout << "Enter filter term: ";
+	getline(std::cin, filter);
+	filter = stringToLower(filter);
+
+	return 0;
+}
+
+
 int main(int argc, char* argv[])
 {
 	std::vector<User> knownUsers;
@@ -40,15 +57,9 @@ int main(int argc, char* argv[])
 		usersFile.close();
 	}
 	i = 0;
-	std::cout << OUT_NAME << std::endl;
-	std::cout << "Enter search term: ";
-	getline(std::cin, search);
-	search = stringToLower(search);
-	replaceSpaces(search);
-	std::cout << "Search term: " << search << std::endl;
-	std::cout << "Enter filter term: ";
-	getline(std::cin, filter);
-	filter = stringToLower(filter);
+
+	getUserInput(search, filter);
+
 	outputFile.open(OUT_NAME);
 
 	while (true) {
