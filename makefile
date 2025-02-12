@@ -1,4 +1,4 @@
-SRCS := main.cpp parser.cpp jsonExporter.cpp
+SRCS := main.cpp parser.cpp jsonExporter.cpp stringFuncs.cpp globalVariables.cpp
 LIBS := -lcurlpp -lcurl
 OBJS := $(SRCS:%.cpp=%.o)
 DEPS := $(OBJS:%.o=%.d)
