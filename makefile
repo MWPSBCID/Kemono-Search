@@ -7,7 +7,9 @@ DEPFLAGS := -MMD -MP
 
 
 KemonoSearch: $(OBJS)
-	g++ -o $@ $^ $(LIBS)
+	g++ -o build/$@ $^ $(LIBS)
+	rm -f $(DEPS)
+	rm -f $(OBJS)
 
 $(OBJS) : %.o : %.cpp
 	g++ $(DEPFLAGS) -c $< $(LIBS)
@@ -23,3 +25,4 @@ clean:
 	rm -f user.json
 	rm -f output.json
 	rm -f *.txt
+	rm -r build/*
