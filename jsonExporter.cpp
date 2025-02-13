@@ -1,10 +1,10 @@
 #include "jsonExporter.h"
 #include <fstream>
+#include "globalVariables.h"
 
-
-int exportJsonData(std::vector<User> users, std::string fileName) {
+int exportJsonData(std::vector<User> users) {
 	
-	std::ofstream jsonFile(fileName);
+	std::ofstream jsonFile(JSON_NAME);
 
 	jsonFile << '[';
 

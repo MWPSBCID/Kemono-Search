@@ -6,4 +6,4 @@
 
 
 
-int exportJsonData(std::vector<User> users, std::string fileName);
+int exportJsonData(std::vector<User> users);

@@ -21,4 +21,5 @@ clean:
 	rm -f output.txt
 	rm -f website.json
 	rm -f user.json
+	rm -f output.json
 	rm -f *.txt

@@ -1,14 +1,9 @@
-#include <curlpp/cURLpp.hpp>
-#include <curlpp/Easy.hpp>
-#include <curlpp/Options.hpp>
 #include <iostream>
 #include <fstream>
-#include <istream>
 #include <ostream>
 #include <string>
 #include <cctype>
 #include <chrono>
-#include <string.h>
 #include <vector>
 #include "entryTypes.h"
 #include "parser.h"
@@ -65,7 +60,7 @@ int main(int argc, char* argv[])
 	while (true) {
 		std::ofstream myFile;
 		const auto startTime{ch::system_clock::now()};
-		getPage(myFile, search, i, startTime, PRINT_TIME);
+		getPage(myFile, search, i, startTime);
 		myFile.close();
 
 		titles = 0;
@@ -117,7 +112,6 @@ int main(int argc, char* argv[])
 				if (titleLow.find(filter) != std::string::npos) {
 					std::cout << "Filter match" << std::endl;	
 					if (GET_USERNAMES) {
-
 						const auto userStart {ch::system_clock::now()};
 						if (!searchUsers(username, knownUsers, user)) {
 							std::ofstream userFile;
@@ -198,7 +192,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	exportJsonData(knownUsers, JSON_NAME);
+	exportJsonData(knownUsers);
 
 	outputFile.close();
 	return 0;

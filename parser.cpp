@@ -5,6 +5,7 @@
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 #include <vector>
+#include "globalVariables.h"
 
 namespace ch = std::chrono;
 
@@ -21,7 +22,7 @@ bool searchUsers(std::string& username, const std::vector<User>& userVector, con
 }
 
 
-int getPage(std::ofstream& file, std::string search, int page, ch::system_clock::time_point startTime, bool PRINT_TIME = false) {
+int getPage(std::ofstream& file, std::string search, int page, ch::system_clock::time_point startTime) {
 	std::string url;	
 	url = "https://kemono.su/api/v1/posts?q=";
 	url += search;
