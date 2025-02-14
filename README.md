@@ -7,11 +7,15 @@ If run without arguments it will create an output.txt file in its own directory.
 
 -u ... Gets usernames of posters
 
--d ... Shows debud information
+-d ... Shows debug information
 
 -o [output.txt] ... Sets output file for regular output
 
 -j [output.json] ... Sets output file for JSON output
+
+-s [search term] ... Sets the search term and disables search term input
+
+-f [filter term] ... Sets the filter term and disables filter term input
 
 ## JSON output
 
