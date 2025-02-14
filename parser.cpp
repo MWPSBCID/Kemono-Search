@@ -24,7 +24,7 @@ bool searchUsers(std::string& username, const std::vector<User>& userVector, con
 
 
 int getPage(std::ofstream& file, std::string search, int page, ch::system_clock::time_point startTime) {
-	std::string url;	
+	std::string url;
 	url = "https://kemono.su/api/v1/posts?q=";
 	url += search;
 	url += "&o=";

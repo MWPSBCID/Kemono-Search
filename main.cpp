@@ -11,7 +11,9 @@
 #include "globalVariables.h"
 
 
-int getUserInput(std::string& search, std::string& filter) {
+int getUserInput() {
+
+	std::string filter, search;
 
 	std::cout << OUT_NAME << std::endl;
 	if (SEARCH_TERM == "") {
@@ -36,8 +38,6 @@ int getUserInput(std::string& search, std::string& filter) {
 int main(int argc, char* argv[])
 {
 	std::vector<User> knownUsers;
-	int i = 0;
-	std::string filter, search, url;
 
 	setGlobalsFromArguments(argc, argv);
 
@@ -53,9 +53,8 @@ int main(int argc, char* argv[])
 		}
 		usersFile.close();
 	}
-	i = 0;
 
-	getUserInput(search, filter);
+	getUserInput();
 
 
 	runParsingLoop(knownUsers);
