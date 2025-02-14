@@ -7,6 +7,7 @@ DEPFLAGS := -MMD -MP
 
 
 KemonoSearch: $(OBJS)
+	mkdir -p build
 	g++ -o build/$@ $^ $(LIBS)
 	rm -f $(DEPS)
 	rm -f $(OBJS)
