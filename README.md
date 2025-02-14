@@ -1,5 +1,6 @@
 # Use
-If run without arguments it will create an output.txt file in its own directory.
+If run without arguments it will create an output.txt file and an output.json
+file in the directory in which it is run.
 
 ## Command line arguments:
 
@@ -19,7 +20,8 @@ If run without arguments it will create an output.txt file in its own directory.
 
 ## JSON output
 
-The JSON output file can be used with the index.html file in the tools directory.
+The JSON output file can be used with the index.html file in the tools
+directory.
 
 Note: The -u argument must be set for the JSON file to be outputed.
 
