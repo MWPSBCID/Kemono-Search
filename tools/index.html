@@ -28,6 +28,7 @@
 				console.log(event.target.result);
 				resultList = JSON.parse(event.target.result);
 				str = "";
+				document.getElementById('output').innerHTML = "";
 				resultList.forEach(printUser);
 			}
 			reader.readAsText(file)
