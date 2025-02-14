@@ -1,4 +1,4 @@
-SRCS := main.cpp parser.cpp jsonExporter.cpp stringFuncs.cpp globalVariables.cpp
+SRCS := main.cpp parser.cpp jsonExporter.cpp stringFuncs.cpp globalVariables.cpp userFunctions.cpp
 LIBS := -lcurlpp -lcurl
 OBJS := $(SRCS:%.cpp=%.o)
 DEPS := $(OBJS:%.o=%.d)
@@ -25,4 +25,4 @@ clean:
 	rm -f user.json
 	rm -f output.json
 	rm -f *.txt
-	rm -r build/*
+	rm -r -f build/*
