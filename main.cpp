@@ -7,6 +7,7 @@
 #include "parser.h"
 #include "jsonExporter.h"
 #include "stringFuncs.h"
+#include "globalVariables.h"
 #include "userFunctions.h"
 
 
