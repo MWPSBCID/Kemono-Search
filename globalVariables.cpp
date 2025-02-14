@@ -1,11 +1,12 @@
 #include "globalVariables.h"
+#include <cstdio>
 #include <string.h>
 #include <iostream>
 
 
 
 bool PRINT_TIME, GET_USERNAMES, DEBUG_INFO;
-std::string JSON_NAME, OUT_NAME;
+std::string JSON_NAME, OUT_NAME, SEARCH_TERM, FILTER_TERM;
 
 int setGlobalsFromArguments(int argc, char* argv[]) {
 	int i = 0;
@@ -14,6 +15,8 @@ int setGlobalsFromArguments(int argc, char* argv[]) {
 	DEBUG_INFO = false;
 	OUT_NAME = "output.txt";
 	JSON_NAME = "output.json";
+	SEARCH_TERM = "";
+	FILTER_TERM = "";
 	if (argc > 1) {
 		
 		for (i = 1; i < argc; i++) {
@@ -53,6 +56,32 @@ int setGlobalsFromArguments(int argc, char* argv[]) {
 					return -1;
 				}
 				OUT_NAME = argv[i];
+				continue;
+			}
+			if (strcmp(argv[i], "-s") == 0 || strcmp(argv[i], "-S") == 0) {
+				i++;
+				if (i == argc) {
+					std::cout << "No search term." << std::endl;
+					return -1;
+				}
+				if (argv[i][0] == '-') {
+					std::cout << "Search term may not start with -" << std::endl;
+					return -1;
+				}
+				SEARCH_TERM = argv[i];
+				continue;
+			}
+			if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "-F") == 0) {
+				i++;
+				if (i == argc) {
+					std::cout << "No filter term." << std::endl;
+					return -1;
+				}
+				if (argv[i][0] == '-') {
+					std::cout << "Filter term may not start with -" << std::endl;
+					return -1;
+				}
+				FILTER_TERM = argv[i];
 				continue;
 			}
 			

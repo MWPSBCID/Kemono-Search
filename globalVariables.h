@@ -2,7 +2,7 @@
 #include <string>
 
 extern bool PRINT_TIME, GET_USERNAMES, DEBUG_INFO;
-extern std::string JSON_NAME, OUT_NAME;
+extern std::string JSON_NAME, OUT_NAME, SEARCH_TERM, FILTER_TERM;
 
 
 

@@ -17,14 +17,19 @@ namespace ch = std::chrono;
 int getUserInput(std::string& search, std::string& filter) {
 
 	std::cout << OUT_NAME << std::endl;
-	std::cout << "Enter search term: ";
-	getline(std::cin, search);
+	if (SEARCH_TERM == "") {
+		std::cout << "Enter search term: ";
+		getline(std::cin, search);
+	} else (search = SEARCH_TERM);
 	search = stringToLower(search);
 	replaceSpaces(search);
 	std::cout << "Search term: " << search << std::endl;
+	if (FILTER_TERM == "") {
 	std::cout << "Enter filter term: ";
 	getline(std::cin, filter);
+	} else (filter = FILTER_TERM);
 	filter = stringToLower(filter);
+	std::cout << "Filter term: " << filter << std::endl;
 
 	return 0;
 }
