@@ -17,3 +17,5 @@ int getPage(std::ofstream& file, std::string search, int page, ch::time_point<ch
 int getUser(std::ofstream& file, std::string userId, std::string& username, std::vector<User> user, std::string service);
 
 int addEntry(std::vector<User>& users, std::string userId, Entry entry);
+
+int runParsingLoop(std::vector<User>& knownUsers);
