@@ -18,6 +18,10 @@ file in the directory in which it is run.
 
 -f [filter term] ... Sets the filter term and disables filter term input
 
+-r ... Use regex matching with filter term
+
+-R ... Same as -r but case insensitive
+
 ## JSON output
 
 The JSON output file can be used with the index.html file in the tools
