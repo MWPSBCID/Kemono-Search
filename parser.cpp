@@ -19,6 +19,7 @@ bool filterCheck(std::string& title) {
 		if (REGEX_ICASE) return std::regex_search(title, std::regex(FILTER_TERM, ECMAScript | icase));
 		else return std::regex_search(title, std::regex(FILTER_TERM));
 	} else {
+		title = stringToLower(title);
 		return title.find(FILTER_TERM) != std::string::npos;
 	}
 	std::cout << "filterCheck() failure." << std::endl;
@@ -184,11 +185,10 @@ int runParsingLoop(std::vector<User>& knownUsers) {
 					escapeChar = true;
 				}
 				} while (escapeChar);
-				titleLow = stringToLower(entry.title);
 				titles++;
 				entry.link = "https://kemono.su/patreon/user/" + user + "/post/" + id;
 				//	Get username
-				if (filterCheck(titleLow)) {
+				if (filterCheck(entry.title)) {
 					std::cout << "Filter match" << std::endl;	
 					if (GET_USERNAMES) {
 						const auto userStart {ch::system_clock::now()};
