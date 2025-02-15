@@ -28,7 +28,8 @@ int getUserInput() {
 	std::cout << "Enter filter term: ";
 	getline(std::cin, filter);
 	} else filter = FILTER_TERM;
-	FILTER_TERM = stringToLower(filter);
+	if (!USE_REGEX) FILTER_TERM = stringToLower(filter);
+	else FILTER_TERM = filter;
 	std::cout << "Filter term: " << FILTER_TERM << std::endl;
 
 	return 0;

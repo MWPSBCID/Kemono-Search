@@ -1,4 +1,5 @@
 #include "parser.h"
+#include <cstdio>
 #include <iostream>
 #include <chrono>
 #include <curlpp/cURLpp.hpp>
@@ -7,8 +8,22 @@
 #include <vector>
 #include "globalVariables.h"
 #include "stringFuncs.h"
+#include <regex>
 
 namespace ch = std::chrono;
+
+
+bool filterCheck(std::string& title) {
+	if (USE_REGEX) {
+		using namespace std::regex_constants;
+		if (REGEX_ICASE) return std::regex_search(title, std::regex(FILTER_TERM, ECMAScript | icase));
+		else return std::regex_search(title, std::regex(FILTER_TERM));
+	} else {
+		return title.find(FILTER_TERM) != std::string::npos;
+	}
+	std::cout << "filterCheck() failure." << std::endl;
+	return false;
+}
 
 
 bool searchUsers(std::string& username, const std::vector<User>& userVector, const std::string userId) {
@@ -173,7 +188,7 @@ int runParsingLoop(std::vector<User>& knownUsers) {
 				titles++;
 				entry.link = "https://kemono.su/patreon/user/" + user + "/post/" + id;
 				//	Get username
-				if (titleLow.find(FILTER_TERM) != std::string::npos) {
+				if (filterCheck(titleLow)) {
 					std::cout << "Filter match" << std::endl;	
 					if (GET_USERNAMES) {
 						const auto userStart {ch::system_clock::now()};
