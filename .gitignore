@@ -27,7 +27,6 @@
 *.lib
 
 *.json
-*.txt
 # Executables
 *.exe
 *.out
