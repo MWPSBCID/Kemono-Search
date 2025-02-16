@@ -25,5 +25,5 @@ clean:
 	rm -f website.json
 	rm -f user.json
 	rm -f output.json
-	rm -f *.txt
+	rm -f output.txt
 	rm -r -f build/*

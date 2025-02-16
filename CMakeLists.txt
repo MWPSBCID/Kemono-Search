@@ -21,6 +21,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(curlpp)
 
-add_executable(KemonoSearch main.cpp parser.cpp jsonExporter.cpp stringFuncs.cpp globalVariables.cpp userFunctions.cpp)
+set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
+FetchContent_Declare(ftxui
+  GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
+  GIT_TAG main # Important: Specify a version or a commit hash here.
+)
+FetchContent_MakeAvailable(ftxui)
 
-target_link_libraries(KemonoSearch PRIVATE CURL::libcurl curlpp)
+add_executable(KemonoSearch main.cpp parser.cpp jsonExporter.cpp stringFuncs.cpp globalVariables.cpp userFunctions.cpp gui.cpp)
+
+target_link_libraries(KemonoSearch 
+	PRIVATE CURL::libcurl
+	curlpp
+	PRIVATE ftxui::screen
+	PRIVATE ftxui::dom
+	PRIVATE ftxui::component
+  )

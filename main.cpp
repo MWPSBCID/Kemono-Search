@@ -9,7 +9,7 @@
 #include "stringFuncs.h"
 #include "globalVariables.h"
 #include "userFunctions.h"
-
+#include "gui.h"
 
 
 int getUserInput() {
@@ -44,15 +44,16 @@ int main(int argc, char* argv[])
 	setGlobalsFromArguments(argc, argv);
 
 	readUsers(knownUsers);
-
-	getUserInput();
-
-
-	runParsingLoop(knownUsers);
+	if (NO_GUI) {
+		getUserInput();
+		runParsingLoop(knownUsers);
+	} else {
+		runGUI(knownUsers);
+	}
 
 	saveUsers(knownUsers);
 
-	std::cout << "Finished parsing!" << std::endl;
+	if (NO_GUI) std::cout << "Finished parsing!" << std::endl;
 	
 	printUserDebug(knownUsers);
 

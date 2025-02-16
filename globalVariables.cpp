@@ -5,7 +5,7 @@
 
 
 
-bool PRINT_TIME, GET_USERNAMES, DEBUG_INFO, USE_REGEX, REGEX_ICASE;
+bool PRINT_TIME, GET_USERNAMES, DEBUG_INFO, USE_REGEX, REGEX_ICASE, NO_GUI;
 std::string JSON_NAME, OUT_NAME, SEARCH_TERM, FILTER_TERM;
 
 int setGlobalsFromArguments(int argc, char* argv[]) {
@@ -14,6 +14,7 @@ int setGlobalsFromArguments(int argc, char* argv[]) {
 	GET_USERNAMES = false;
 	DEBUG_INFO = false;
 	USE_REGEX = false;
+	NO_GUI = false;
 	REGEX_ICASE = false;
 	OUT_NAME = "output.txt";
 	JSON_NAME = "output.json";
@@ -38,6 +39,10 @@ int setGlobalsFromArguments(int argc, char* argv[]) {
 			}
 			if (strcmp(argv[i], "-u") == 0 || strcmp(argv[i], "-U") == 0) {
 				GET_USERNAMES = true;
+				continue;
+			}
+			if (strcmp(argv[i], "--no-gui") == 0) {
+				NO_GUI = true;
 				continue;
 			}
 			if (strcmp(argv[i], "-j") == 0 || strcmp(argv[i], "-J") == 0) {

@@ -1,10 +1,12 @@
 #include "parser.h"
 #include <cstdio>
+#include <ftxui/component/screen_interactive.hpp>
 #include <iostream>
 #include <chrono>
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
+#include <string>
 #include <vector>
 #include "globalVariables.h"
 #include "stringFuncs.h"
@@ -12,6 +14,8 @@
 
 namespace ch = std::chrono;
 
+extern std::string guiOutputText;
+extern ftxui::ScreenInteractive screen;
 
 bool filterCheck(std::string& title) {
 	if (USE_REGEX) {
@@ -22,7 +26,8 @@ bool filterCheck(std::string& title) {
 		title = stringToLower(title);
 		return title.find(FILTER_TERM) != std::string::npos;
 	}
-	std::cout << "filterCheck() failure." << std::endl;
+	if (NO_GUI) std::cout << "filterCheck() failure." << std::endl;
+	else guiOutputText.insert(0, "filterCheck() failure.\n");
 	return false;
 }
 
@@ -45,7 +50,11 @@ int getPage(std::ofstream& file, std::string search, int page, ch::system_clock:
 	url += search;
 	url += "&o=";
 	url += std::to_string(page*50);
-	std::cout << "Searching page " << page + 1 << "." << std::endl;
+	if (NO_GUI) std::cout << "Searching page " << page + 1 << "." << std::endl;
+	else { 
+		guiOutputText.insert(0, "Searching page " + std::to_string(page+1) + ".\n");
+		screen.PostEvent(ftxui::Event::Custom);
+	}
 	file.open("website.json");
 	try
 	{
@@ -76,7 +85,13 @@ int getPage(std::ofstream& file, std::string search, int page, ch::system_clock:
 	}
 	const auto getTime{ch::system_clock::now()};
 	ch::duration<double> getElapsed{getTime-startTime};
-	if (PRINT_TIME) std::cout << "Time for get: " << getElapsed.count() * 1000 << "ms" << std::endl;
+	if (PRINT_TIME) {
+		if (NO_GUI) std::cout << "Time for get: " << getElapsed.count() * 1000 << "ms" << std::endl;
+		else {
+			guiOutputText.insert(0, "Time for get: " + std::to_string(getElapsed.count() * 1000) + "ms\n");
+			screen.PostEvent(ftxui::Event::Custom);
+		}
+	}
 
 	return 0;
 }
@@ -189,7 +204,11 @@ int runParsingLoop(std::vector<User>& knownUsers) {
 				entry.link = "https://kemono.su/patreon/user/" + user + "/post/" + id;
 				//	Get username
 				if (filterCheck(entry.title)) {
-					std::cout << "Filter match" << std::endl;	
+					if (NO_GUI) std::cout << "Filter match" << std::endl;
+					else {
+						guiOutputText.insert(0, "Filter match\n");
+						screen.PostEvent(ftxui::Event::Custom);
+					}
 					if (GET_USERNAMES) {
 						const auto userStart {ch::system_clock::now()};
 						if (!searchUsers(username, knownUsers, user)) {
@@ -209,8 +228,12 @@ int runParsingLoop(std::vector<User>& knownUsers) {
 									break;
 								}
 								if (myFileI.eof()) {
-									std::cout << "Error getting username";
-									outputFile << "Error getting username";
+									if (NO_GUI) std::cout << "Error getting username" << std::endl;
+									else {
+										guiOutputText.insert(0, "Error getting username\n");
+										screen.PostEvent(ftxui::Event::Custom);
+									}
+									outputFile << "Error getting username" << std::endl;
 									break;
 								}
 								
@@ -223,29 +246,42 @@ int runParsingLoop(std::vector<User>& knownUsers) {
 						}
 						const auto userEnd {ch::system_clock::now()};
 						ch::duration<double> userElapsed {userEnd - userStart};
-						if (PRINT_TIME) std::cout << "User get cost: " << userElapsed.count()*1000 << "ms" << std::endl;
-						
+						if (PRINT_TIME){
+							if (NO_GUI) std::cout << "User get cost: " << userElapsed.count()*1000 << "ms" << std::endl;
+							else guiOutputText.insert(0,"User get cost: " + std::to_string(userElapsed.count()*1000) + "ms\n");
+						}
+
 						if (addEntry(knownUsers, user, entry)) {
-							std::cout << "Error on adding entry to user: " << user;
+							if (NO_GUI) std::cout << "Error on adding entry to user: " << user << std::endl;
+							else guiOutputText.insert(0, "Error on adding entry to user: " + user + '\n');
 							return -1;
 						}
 
-						std::cout << "Title: " << entry.title << "		User: " << username << std::endl;
+						if (NO_GUI) std::cout << "Title: " << entry.title << "		User: " << username << std::endl;
+						else guiOutputText.insert(0,"Title: " + entry.title + "		User: " + username + '\n');
 						outputFile << "\nPage: " << i + 1 << "	Title: " << title << "		User: " << username << std::endl;
 					}
 					else {
-						std::cout << "Title: " << entry.title << std::endl;
+						if (NO_GUI) std::cout << "Title: " << entry.title << std::endl;
+						else guiOutputText.insert(0, "Title: " + entry.title + '\n');
 						outputFile << "\nPage: " << i + 1 << "	Title: " << title << std::endl;
 					}
-					std::cout << "https://kemono.su/patreon/user/" << user << "/post/" << id << std::endl;
+					if (NO_GUI) std::cout << "https://kemono.su/patreon/user/" << user << "/post/" << id << std::endl;
+					else {
+						guiOutputText.insert(0, "https://kemono.su/patreon/user/" + user + "/post/" + id + '\n');
+						guiOutputText = guiOutputText.substr(0, 2000);
+						screen.PostEvent(ftxui::Event::Custom);
+					}
 					outputFile << "https://kemono.su/patreon/user/" << user << "/post/" << id << std::endl;
 				}
 			}
 		}
 		const auto endTime{ch::system_clock::now()};
 		const ch::duration<double> elapsedTime{endTime - startTime};
-		if (PRINT_TIME) std::cout << "Finished page in " << elapsedTime.count() * 1000 << " milliseconds" << std::endl;
-
+		if (PRINT_TIME){
+			if (NO_GUI) std::cout << "Finished page in " << elapsedTime.count() * 1000 << " milliseconds." << std::endl;
+			else guiOutputText.insert(0,"Finished page in " + std::to_string(elapsedTime.count() * 1000) + " milliseconds.\n");
+		}
 		if (titles == 0)
 			break;
 
