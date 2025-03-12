@@ -19,6 +19,8 @@
 	<script>
 		var str;
 		var currentID;
+
+	
 		document.getElementById('file').addEventListener('change', readFile, false);
 		function readFile(evt) {
 			var files = evt.target.files;
@@ -29,6 +31,7 @@
 				resultList = JSON.parse(event.target.result);
 				str = "";
 				document.getElementById('output').innerHTML = "";
+				resultList.sort((a,b) => b.entries.length - a.entries.length);
 				resultList.forEach(printUser);
 			}
 			reader.readAsText(file)

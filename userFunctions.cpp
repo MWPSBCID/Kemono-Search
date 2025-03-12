@@ -10,7 +10,7 @@ int readUsers(std::vector<User>& knownUsers) {
 		User u;
 		std::string buf;
 		while (true) {
-			usersFile >> u;
+			if(!(usersFile >> u)) std::cout << "User read failed.";
 			if (usersFile.fail()) break;
 			knownUsers.push_back(u);
 			getline(usersFile, buf);
